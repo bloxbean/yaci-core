@@ -1,5 +1,6 @@
 package com.bloxbean.cardano.yaci.helper;
 
+import com.bloxbean.cardano.client.common.model.Networks;
 import com.bloxbean.cardano.yaci.core.model.Block;
 import com.bloxbean.cardano.yaci.core.model.byron.ByronEbBlock;
 import com.bloxbean.cardano.yaci.core.model.byron.ByronMainBlock;
@@ -56,7 +57,8 @@ public class N2CChainSyncIT extends BaseTest {
 
     @Test
     void testChainSync_fromRecent() throws InterruptedException {
-        N2CChainSyncFetcher chainSyncFetcher = new N2CChainSyncFetcher(nodeSocketFile, Point.ORIGIN, protocolMagic, true);
+        N2CChainSyncFetcher chainSyncFetcher = new N2CChainSyncFetcher("delta.relay.easy1staking.com", 30100, Point.ORIGIN, Networks.mainnet().getProtocolMagic());
+//        N2CChainSyncFetcher chainSyncFetcher = new N2CChainSyncFetcher(nodeSocketFile, Point.ORIGIN, protocolMagic, true);
 
         List<Block> blocks = new ArrayList<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);

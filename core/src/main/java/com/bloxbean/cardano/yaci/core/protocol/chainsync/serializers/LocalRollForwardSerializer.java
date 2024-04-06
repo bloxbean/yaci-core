@@ -4,6 +4,7 @@ import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
+import com.bloxbean.cardano.client.exception.CborRuntimeException;
 import com.bloxbean.cardano.yaci.core.common.EraUtil;
 import com.bloxbean.cardano.yaci.core.model.Block;
 import com.bloxbean.cardano.yaci.core.model.Era;
@@ -13,21 +14,44 @@ import com.bloxbean.cardano.yaci.core.model.serializers.BlockSerializer;
 import com.bloxbean.cardano.yaci.core.model.serializers.ByronBlockSerializer;
 import com.bloxbean.cardano.yaci.core.model.serializers.ByronEbBlockSerializer;
 import com.bloxbean.cardano.yaci.core.protocol.Serializer;
+import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.IntersectNotFound;
 import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.LocalRollForward;
 import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.Tip;
 import com.bloxbean.cardano.yaci.core.util.CborSerializationUtil;
+import com.bloxbean.cardano.yaci.core.util.HexUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 import static com.bloxbean.cardano.yaci.core.util.CborSerializationUtil.toInt;
 
+@Slf4j
 public enum LocalRollForwardSerializer implements Serializer<LocalRollForward> {
     INSTANCE;
 
+    @Override
+    public byte[] serialize(LocalRollForward localRollForward) {
+        Array array = new Array();
+        array.add(new UnsignedInteger(2));
+
+
+        var blockArray = new Array();
+        blockArray.add(new UnsignedInteger(localRollForward.getBlock().getEra().getValue()));
+
+        // TODO: add block serialization
+
+        array.add(TipSerializer.INSTANCE.serializeDI(localRollForward.getTip()));
+
+        return CborSerializationUtil.serialize(array, false);
+    }
+
     public LocalRollForward deserialize(byte[] bytes) {
+//        log.info("deserialize: {}", HexUtil.encodeHexString(bytes));
         Array contentArr = (Array)CborSerializationUtil.deserializeOne(bytes);
         List<DataItem> contentDI = contentArr.getDataItems();
-        int rollForwardType = toInt(contentDI.get(0));
+        int label = toInt(contentDI.get(0));
+        if (label != 2)
+            throw new CborRuntimeException("Invalid label : " + contentArr);
 
         ByteString blockContent = (ByteString) contentDI.get(1);
         byte[] blockBytes = blockContent.getBytes();

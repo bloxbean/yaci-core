@@ -1,5 +1,6 @@
 package com.bloxbean.cardano.yaci.helper;
 
+import com.bloxbean.cardano.client.common.model.Networks;
 import com.bloxbean.cardano.yaci.core.common.Constants;
 import com.bloxbean.cardano.yaci.core.model.Block;
 import com.bloxbean.cardano.yaci.core.model.Era;

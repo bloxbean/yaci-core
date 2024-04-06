@@ -22,6 +22,8 @@ public interface ChainSyncStateBase extends State {
         try {
             Array array = (Array) CborSerializationUtil.deserializeOne(bytes);
             int id = ((UnsignedInteger) array.getDataItems().get(0)).getValue().intValue();
+            var hexBytes = HexUtil.encodeHexString(bytes);
+            log.info("id: {} hexBytes: {}", id, hexBytes);
             switch (id) {
                 case 1:
                     return new AwaitReply();

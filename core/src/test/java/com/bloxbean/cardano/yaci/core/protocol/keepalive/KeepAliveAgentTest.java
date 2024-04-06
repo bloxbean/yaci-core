@@ -8,6 +8,8 @@ import com.bloxbean.cardano.yaci.core.protocol.handshake.HandshakeAgentListener;
 import com.bloxbean.cardano.yaci.core.protocol.handshake.messages.Reason;
 import com.bloxbean.cardano.yaci.core.protocol.handshake.util.N2CVersionTableConstant;
 import com.bloxbean.cardano.yaci.core.protocol.handshake.util.N2NVersionTableConstant;
+import com.bloxbean.cardano.yaci.core.protocol.keepalive.messages.MsgKeepAlive;
+import com.bloxbean.cardano.yaci.core.protocol.keepalive.messages.MsgKeepAliveResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -44,9 +46,21 @@ class KeepAliveAgentTest extends BaseTest {
             }
         });
 
-        keepAliveAgent.addListener(response -> {
-            log.info("Keep Alive respone >> " + response);
+//        keepAliveAgent.addListener(response -> {
+//            log.info("Keep Alive respone >> " + response);
+//            countDownLatch.countDown();
+//        });
+        keepAliveAgent.addListener(new KeepAliveListener() {
+            @Override
+            public void keepAlive(MsgKeepAlive keepAlive) {
+
+            }
+
+            @Override
+            public void keepAliveResponse(MsgKeepAliveResponse keepAliveResponse) {
+            log.info("Keep Alive respone >> " + keepAliveResponse);
             countDownLatch.countDown();
+            }
         });
         n2CClient.start();
 
@@ -77,10 +91,23 @@ class KeepAliveAgentTest extends BaseTest {
             }
         });
 
-        keepAliveAgent.addListener(response -> {
-            log.info("Keep Alive respone >> " + response);
-            keepAliveResp.set(response.getCookie());
-            countDownLatch.countDown();
+//        keepAliveAgent.addListener(response -> {
+//            log.info("Keep Alive respone >> " + response);
+//            keepAliveResp.set(response.getCookie());
+//            countDownLatch.countDown();
+//        });
+        keepAliveAgent.addListener(new KeepAliveListener() {
+            @Override
+            public void keepAlive(MsgKeepAlive keepAlive) {
+
+            }
+
+            @Override
+            public void keepAliveResponse(MsgKeepAliveResponse keepAliveResponse) {
+                log.info("Keep Alive respone >> " + keepAliveResponse);
+                keepAliveResp.set(keepAliveResponse.getCookie());
+                countDownLatch.countDown();
+            }
         });
         n2nClient.start();
 
